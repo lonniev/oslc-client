@@ -28,8 +28,9 @@ var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#
 var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
 var OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
 var OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
+var OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
-var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
+var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
 
 // Encapsulates a Jazz rootservices document as in-memroy RDF knowledge base
 //
@@ -39,9 +40,10 @@ var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
 function RootServices(uri, rdfSource) {
 	// Parse the RDF source into an internal representation for future use
 	this.rootServicesURI = uri;
-	this.kb = new rdflib.IndexedFormula();
-	rdflib.parse(rdfSource, this.kb, uri, 'application/rdf+xml');
 	
+	this.kb = new rdflib.IndexedFormula();
+	
+	rdflib.parse(rdfSource, this.kb, uri, 'application/rdf+xml');
 }
 
 // The RTC rootservices document has a number of jd:oslcCatalogs properties
@@ -58,11 +60,16 @@ function RootServices(uri, rdfSource) {
 //
 RootServices.prototype.serviceProviderCatalogURI = function(domain)  {
 	var catalogURI = undefined;
-	var catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), JD('oslcCatalogs'));
+	
+	const catalogs = ( domain.uri == OSLCRM().uri )
+	    ? this.kb.each(this.kb.sym(this.rootServicesURI), OSLCRM('rmServiceProviders'))
+	        : this.kb.each(this.kb.sym(this.rootServicesURI), JD('oslcCatalogs'));
+	
 	for (var c in catalogs) {
 		var catalog = this.kb.statementsMatching(catalogs[c], OSLC('domain'), domain);
 		if (catalog) return catalogs[c].uri;
 	}
+	
 	return catalogURI;
 }
 

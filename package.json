@@ -4,21 +4,15 @@
   "description": "Fast, open framework for service integration",
   "version": "0.0.1",
   "author": {
-    "name": "Jim Amsden",
-    "email": "jamsden@us.ibm.com"
+    "name": "Lonnie VanZandt",
+    "email": "lvanzandt@sodius.com"
   },
-  "contributors": [
-    {
-      "name": "Jim Ruehlin",
-      "email": "jruehlin@us.ibm.com"
-    }
-  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://hub.jass.net/git/jamsden/oslc.git"
   },
-  "homepage": "http://open-services.net/",
+  "homepage": "http://sodius.com/",
   "keywords": [
     "oslc",
     "ldp",
@@ -29,7 +23,11 @@
   ],
   "dependencies": {
     "jsonld": "^0.4.2",
+    "lodash": "4.13.1",
+    "oauth-1.0a": "1.0.1",
+    "passport": "0.3.2",
     "rdflib": "^0.2.10",
-    "request": "~2.60.0"
+    "request": "~2.60.0",
+    "urijs": "1.18.1"
   }
 }

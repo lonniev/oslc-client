@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+const _ = require('lodash');
+const escapeStringRegexp = require('escape-string-regexp');
+
 var rdflib = require('rdflib');
 var ServiceProvider = require('./ServiceProvider');
 
@@ -30,6 +33,7 @@ var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#
 var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
 var OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
 var OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
+var OSLCRM = rdflib.Namespace('http://open-services.net/ns/rm#');
 var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
 var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
 
@@ -40,13 +44,14 @@ var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
 // @uri: the ServiceProviderCatalog URI
 // @rdfSource: the RDF/XML for the ServiceProviderCatalog
 //
-function ServiceProviderCatalog(uri, rdfSource) {
-	// Parse the RDF source into an internal representation for future use
-	var _self = this;
-	_self.catalogURI = uri;
-	_self.catalog = new rdflib.IndexedFormula();
-	rdflib.parse(rdfSource, _self.catalog, uri, 'application/rdf+xml');
-	_self.xmlLiteral = _self.catalog.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral');	
+function ServiceProviderCatalog(uri, rdfSource)
+{
+    // Parse the RDF source into an internal representation for future use
+    var _self = this;
+    _self.catalogURI = uri;
+    _self.catalog = new rdflib.IndexedFormula();
+    rdflib.parse(rdfSource, _self.catalog, uri, 'application/rdf+xml');
+    _self.xmlLiteral = _self.catalog.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral');
 }
 
 // Get the ServiceProvider with the given service provider name. This will also load all the
@@ -60,15 +65,44 @@ function ServiceProviderCatalog(uri, rdfSource) {
 // @serviceProviderTitle: the dcterms:title of the service provider (e.g., an RTC project area)
 // @callback(err, serviceProvider): called back when the ServiceProvider had been populated with Services
 //
-ServiceProviderCatalog.prototype.serviceProvider = function(serviceProviderTitle, request, callback) {
-
-	var sp = this.catalog.statementsMatching(undefined, DCTERMS('title'), this.catalog.literal(serviceProviderTitle, undefined, this.xmlLiteral));
-	if (!sp) return console.log('Service Provider '+serviceProviderTitle+'  not found');
-	var serviceProvider = new ServiceProvider(sp[0].subject.uri, request, function doneGettingServices(err) {
-		if (err) return console.log('Cannot load services for '+serviceProviderTitle+': '+err);
-		callback(undefined, serviceProvider); // the constructed ServiceProvider is now fully constructed
-	});
-}
+ServiceProviderCatalog.prototype.serviceProvider =
+    function(serviceProviderTitle, request, callback)
+    {
+        var haveTitle = this.catalog.statementsMatching(
+            undefined, 
+            DCTERMS('title'),
+            undefined );
+        
+        const regex = new RegExp( ".*?" + escapeStringRegexp( serviceProviderTitle ) + ".*?" );
+        
+        var sp = _.filter( haveTitle,
+            (s) =>
+            {                
+                return s.object.value.match( regex );
+            }
+        );
+        
+        if ( ! Array.isArray( sp ) || sp.length == 0 )
+        {
+           return console.log( `Service Provider ${serviceProviderTitle} not found` );
+        }
+                
+        var serviceProvider = new ServiceProvider(
+            sp[0].subject.uri,
+            request,
+            
+            (err) =>
+            {
+                if (err)
+                {
+                    return console.log(
+                        `Cannot load services for ${serviceProviderTitle}: ${err}` );
+                }
+    
+                callback(undefined, serviceProvider); // the constructed ServiceProvider is now fully constructed
+            }
+        );
+    }
 
 
 module.exports = ServiceProviderCatalog;

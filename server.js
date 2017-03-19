@@ -20,14 +20,14 @@
  * using JSON-LD.
  */
 
-var request = require('request').defaults({
-	headers: {
-		'Accept': 'application/rdf+xml',
-		'OSLC-Core-Version': '2.0'
-	},
-	strictSSL: false,  		  // no need for certificates
-	jar: true,                // cookie jar
-	followAllRedirects: true  // for FORM based authentication
+const request = require('request').defaults({
+    headers : {
+        'Accept' : 'application/rdf+xml',
+        'OSLC-Core-Version' : '2.0'
+    },
+    strictSSL : false, // no need for certificates
+    jar : true, // cookie jar
+    followAllRedirects : true // for FORM based authentication
 });
 
 var RootServices = require('./RootServices');
@@ -35,6 +35,9 @@ var ServiceProviderCatalog = require('./ServiceProviderCatalog');
 var OSLCResource = require('./resource');
 
 var rdflib = require('rdflib');
+
+const URI = require('urijs');
+const _ = require('lodash');
 
 // Define some useful namespaces
 
@@ -48,11 +51,12 @@ var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#
 var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
 var OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
 var OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
+var OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
 
 /**
  * All the OSLCServer methods are asynchronous since many of them
- * could take a while to execute. 
+ * could take a while to execute.
  */
 
 /**
@@ -67,14 +71,15 @@ var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
  * @property {ServiceProviderCatalog} serviceProviderCatalog - the servers' service provider catalog
  * @property {ServiceProvider} serviceProvider - A service provider describing available services
  */
-function OSLCServer(serverURI) {
-	this.serverURI = serverURI;
-	this.userName = null;
-	this.password = null;
-	this.rootServices = null; 
-	this.serviceProviderCatalog = null;
-	this.providerContainerName = null; 
-	this.serviceProvider = null;  
+function OSLCServer(serverURI)
+{
+    this.serverURI = serverURI;
+    this.userName = null;
+    this.password = null;
+    this.rootServices = null;
+    this.serviceProviderCatalog = null;
+    this.providerContainerName = null;
+    this.serviceProvider = null;
 }
 
 /**
@@ -85,34 +90,61 @@ function OSLCServer(serverURI) {
  * @param callback(err) - called when the connection is established
  */
 OSLCServer.prototype.connect = function(userName, password, callback) {
-	var _self = this; // needed to refer to this inside nested callback functions
-	_self.userName = userName;
-	_self.password = password;
+    var _self = this; // needed to refer to this inside nested callback functions
+    _self.userName = userName;
+    _self.password = password;
 
-	// Get the Jazz rootservices document for OSLC v2
-	// This does not require authentication
-	request.get(_self.serverURI+'/rootservices', function gotRootServices(err, response, body) {
-		if (err || response.statusCode != 200) 
-			return console.error('Failed to read the Jazz rootservices resource '+err);
-		_self.rootServices = new RootServices(_self.serverURI+'/rootservices', body);
+    // Get the Jazz rootservices document for OSLC v2
+    // This does not require authentication
 
-		// Now get the ServiceProviderCatalog so that we know what services are provided
-		var catalogURI = _self.rootServices.serviceProviderCatalogURI(OSLCCM());
-		//require('request-debug')(request);
-		// This request will require authentication through FORM based challenge response
-		request.get(catalogURI, gotServiceProviderCatalog);
-	});
-	
-	// Parse the service provider catalog, it will be needed for any other request.
-	function gotServiceProviderCatalog(err, response, body) {
-		if (response &&  response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired') {
-			return request.post(_self.serverURI+'/j_security_check?j_username='+_self.userName+'&j_password='+_self.password, gotServiceProviderCatalog);
-		} else if (!response || response.statusCode != 200) {
-			return console.error('Failed to read the CM ServiceProviderCatalog '+err);
-		}
-		_self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, body);
-		callback(null); // call the callback with no error
-	}
+    const rootServicesUri = URI( _self.serverURI ).segment( 'rootservices' ).toString();
+
+    request.get(rootServicesUri,
+
+        (err, response, body) =>
+        {
+
+            if (err || response.statusCode != 200)
+                return console.error('Failed to read the Jazz rootservices resource ' + err);
+
+            _self.rootServices = new RootServices(rootServicesUri, body);
+
+            // Now get the ServiceProviderCatalog so that we know what services are provided
+            var catalogURI = _self.rootServices.serviceProviderCatalogURI(OSLCRM());
+
+            // This request will require authentication through FORM based challenge response
+            if (catalogURI == null)
+            {
+                return console.error('No catalog URI at ' + _self.rootServices.rootServicesURI);
+            }
+
+            request.get(catalogURI, gotServiceProviderCatalog);
+        }
+    );
+
+    // Parse the service provider catalog, it will be needed for any other request.
+    function gotServiceProviderCatalog(err, response, body)
+    {
+        if (response && response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
+        {
+            const securityUri = URI( _self.serverURI )
+                .segment( 'j_security_check' )
+                .addSearch( 'j_username', _self.userName )
+                .addSearch( 'j_password', _self.password )
+                .toString();
+
+            return request.post( securityUri, gotServiceProviderCatalog);
+        }
+
+        if (!response || response.statusCode != 200)
+        {
+            return console.error('Failed to read the OSLC ServiceProviderCatalog ' + err);
+        }
+
+        _self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, body);
+
+        callback(null); // call the callback with no error
+    }
 }
 
 /**
@@ -122,15 +154,23 @@ OSLCServer.prototype.connect = function(userName, password, callback) {
  * @param {URI} providerContainerName - the ServiceProvider or LDP Container (e.g., project area) name
  * @param callback(err) - called when the context is set to the service provider
  */
-OSLCServer.prototype.use = function(providerContainerName, callback) {
-	var _self = this;
-	_self.providerContainerName = providerContainerName;
-	// From the service provider catalog, get the service provider resource(service.xml)
-	// resource for the project area. 
-	_self.serviceProviderCatalog.serviceProvider(providerContainerName, request, function doneGettingSP(err, serviceProvider) {
-		_self.serviceProvider = serviceProvider;
-		callback(undefined); // call the callback with no error
-	});
+OSLCServer.prototype.use = function(providerContainerName, callback)
+{
+    var _self = this;
+
+    _self.providerContainerName = providerContainerName;
+
+    // From the service provider catalog, get the service provider resource(service.xml)
+    // resource for the project area.
+    _self.serviceProviderCatalog.serviceProvider(providerContainerName, request,
+
+        (err, serviceProvider) =>
+        {
+                _self.serviceProvider = serviceProvider;
+
+                callback(undefined); // call the callback with no error
+        }
+    );
 }
 
 /**
@@ -139,7 +179,7 @@ OSLCServer.prototype.use = function(providerContainerName, callback) {
  * @param callback(err, result) - callback with an error or the created resource
  */
 OSLCServer.prototype.create = function(err, callback) {
-	// TODO: complete the create function
+    // TODO: complete the create function
 }
 
 /**
@@ -149,27 +189,42 @@ OSLCServer.prototype.create = function(err, callback) {
  * @param callback(err, result) - callback with an error or the read OSLCResource
  */
 OSLCServer.prototype.read = function(resourceID, callback) {
-	// GET the OSLC resource and convert it to a JavaScript object
+    // GET the OSLC resource and convert it to a JavaScript object
 
-	this.query({
-		prefixes: '',
-		select: '*',
-		where: 'dcterms:identifier="'+resourceID+'"',
-		orderBy: ''},  function (err, results) {
-			if (err || results.length !== 1) return console.log('Unable to execute query: '+err);
-			callback(err, results[0]);
-		});
+    this.query(
+        {
+            prefixes : 'dcterms=<http://purl.org/dc/terms/>',
+            select : '*',
+            where : `dcterms:identifier=${resourceID}`,
+            orderBy : ''
+        },
+
+        (err, results) => {
+
+            if (err)
+            {
+                return console.log(`Unable to Query for Resource ${resourceID} due to Error ${err}`)
+            }
+
+            if (results.length > 0)
+            {
+                console.log(`Successful Query for Resource ${resourceID} returned ${results.length} results`);
+            }
+
+            callback(err, results[0]);
+        }
+    );
 }
 
 /**
  * Update an OSLCResource
- * 
+ *
  * @param {string} resourceID - the change request ID
  * @param callback(err) - callback with a potential error
  */
 OSLCServer.prototype.update = function(resourceID, callback) {
-	// Convert the OSLC Resource into an RDF/XML resource and PUT to the server
-	callback(null);
+    // Convert the OSLC Resource into an RDF/XML resource and PUT to the server
+    callback(null);
 }
 
 /**
@@ -179,12 +234,12 @@ OSLCServer.prototype.update = function(resourceID, callback) {
  * @param callback(err): callback with a potential error
  */
 OSLCServer.prototype.delete = function(resourceID, callback) {
-	// TODO: complete the delete function
+    // TODO: complete the delete function
 }
 
 /**
  * Execute an OSLC query on server resources (e.g., ChangeRequests)
- * 
+ *
  * @param options: options for the query. An object of the form:
  *   {prefexes: 'prefix=<URI>,...',   - a list of namespace prefixes and URIs to resolve prefexes in the query
  *    select: '*',  - a list of resource properties to return
@@ -199,43 +254,87 @@ OSLCServer.prototype.delete = function(resourceID, callback) {
  * @param callback(err, result) - called with the query results
  */
 OSLCServer.prototype.query = function(options, callback) {
-	// execute the query
-	var queryBase = this.serviceProvider.queryBase();
-	var queryURI = queryBase;
-	queryURI += '?';
-	if (options.select && options.select !== '') {
-		queryURI += 'oslc.select='+options.select;
-	}
-	if (options.where && options.where !== null) {
-		if (queryURI[-1] !== '?') queryURI += '&';
-		queryURI += 'oslc.where='+options.where;
-	}
-	if (options.orderBy && options.orderBy !== '') {
-		if (queryURI[-1] !== '?') queryURI += '&';
-		queryURI += 'oslc.orderBy='+options.orderBy;
-	}
-	request.get(queryURI, function gotQueryResults(err, response, body) {
-		if (err || response.statusCode != 200) return console.log('Unable to execute query: '+err);
-		// iterate over the members creating an OSLCResource for each matching menber
-		// that contains the selected properties
-		var kb = new rdflib.IndexedFormula();
-		rdflib.parse(body, kb, queryURI, 'application/rdf+xml');
-		var results = [];
-		var members = kb.each(kb.sym(queryBase), RDFS('member'));
-		for (var m in members) {
-			var member = new OSLCResource(members[m].uri);
-			rdflib.fromRDF(kb, members[m], member);
-			results.push(member);
-		}
-		callback(null, results);
-	});
+
+    // discover the query base URL
+    const queryBase = this.serviceProvider.queryBase( 'Requirement' );
+
+    if ( queryBase == null )
+    {
+        return console.error( 'Lookup of Query Base failed for Service Provider ' + this.serviceProvider.providerURI );
+    }
+
+    var queryURI = URI(queryBase);
+
+    // now add the OSLC Query arguments
+    queryURI.search(
+
+        (query) =>
+        {
+            if ( !_.isEmpty( options.prefixes ) )
+            {
+                query['oslc.prefix'] = options.prefixes;
+            }
+
+            if ( !_.isEmpty( options.select ) )
+            {
+                query['oslc.select'] = options.select;
+            }
+
+            if ( !_.isEmpty( options.where ) )
+            {
+                query['oslc.where'] = options.where;
+            }
+
+            if ( !_.isEmpty( options.orderBy ) )
+            {
+                query['oslc.orderBy'] = options.orderBy;
+            }
+        }
+    );
+
+    // send the OSLC Query GET to the server
+    request.get(queryURI.toString(),
+
+        (err, response, body) =>
+        {
+            if (err || response.statusCode != 200)
+            {
+                console.log( response );
+
+                return console.log('Unable to execute query: ' + err);
+            }
+
+            // iterate over the members creating an OSLCResource for each matching member
+            // that contains the selected properties
+            var kb = new rdflib.IndexedFormula();
+
+            rdflib.parse(body, kb, queryURI.toString(), 'application/rdf+xml');
+
+            const resultSetMembers = kb.each(undefined, RDFS('member'));
+
+            const results = _.map( resultSetMembers,
+
+              (m) =>
+                    {
+                        const oslcResource = new OSLCResource(m.uri);
+
+                        rdflib.fromRDF(kb, m, oslcResource);
+
+                        return oslcResource;
+                    }
+
+            );
+
+            callback(null, results);
+        }
+    );
 }
 
 /**
  * Disconnect from the server and release any resources
  */
 OSLCServer.prototype.disconnect = function() {
-	// Logout from the server
+    // Logout from the server
 }
 
 

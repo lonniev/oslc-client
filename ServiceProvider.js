@@ -15,23 +15,25 @@
  */
 
 var rdflib = require('rdflib');
+const _ = require('lodash');
 
 // Define some useful namespaces
 
-var FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
-var RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-var RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
-var OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
-var DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
-var RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
-var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
-var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
-var OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
-var OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
-var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
-var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
+const FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
+const RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+const RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
+const OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
+const DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
+const RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
+const XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
+const CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
+const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
+const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
+const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
+const OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
+const JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
 
-// Encapsulates a OSLC ServiceProvider resource as in-memroy RDF knowledge base
+// Encapsulates a OSLC ServiceProvider resource as in-memory RDF knowledge base
 // This is an asynchronous constructor. The callback is called when the ServiceProvider
 // has discovered all its services
 // @uri: the URI of the ServiceProvider
@@ -55,16 +57,29 @@ function ServiceProvider(uri, request, callback) {
 	});
 }
 
-ServiceProvider.prototype.queryBase = function() {
-	var result = null;
-	for (s in this.service) {
-		if (this.service[s].domain === OSLCCM().uri && this.service[s].queryCapability) {
-			result = this.service[s].queryCapability.queryBase;
-			break;
-		}
-	}
-	return result;
-}
+ServiceProvider.prototype.queryBase = function( soughtResource ) {
+        
+        const queryCapabilities = _.filter( this.service.queryCapability, 
+            (s) =>
+                {                                         
+                    return _.has( s, 'resourceType' )
+                        && _.has( s, 'queryBase' ); 
+                }
+            );
+        
+        const qcsWithSoughtResource = _.filter( queryCapabilities,
+            (qc) => 
+                {                       
+                    return _.some( qc.resourceType, 
+                        (rt) => {  
+                            return rt.match( soughtResource )
+                        }
+                    );
+                }
+            );
+                
+        return _.first(qcsWithSoughtResource).queryBase;        
+ }
 
 // Introspect an RDF object's properties and values, and put them
 // into the JavaScript object
