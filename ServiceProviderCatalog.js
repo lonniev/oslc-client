@@ -37,10 +37,10 @@ var OSLCRM = rdflib.Namespace('http://open-services.net/ns/rm#');
 var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
 var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
 
-// Encapsulates a OSLC ServiceProviderCatalog resource as in-memroy RDF knowledge base
+// Encapsulates a OSLC ServiceProviderCatalog resource as in-memory RDF knowledge base
 
 // Construct a ServiceProviderCatalog
-// 
+//
 // @uri: the ServiceProviderCatalog URI
 // @rdfSource: the RDF/XML for the ServiceProviderCatalog
 //
@@ -69,28 +69,28 @@ ServiceProviderCatalog.prototype.serviceProvider =
     function(serviceProviderTitle, request, callback)
     {
         var haveTitle = this.catalog.statementsMatching(
-            undefined, 
+            undefined,
             DCTERMS('title'),
             undefined );
-        
+
         const regex = new RegExp( ".*?" + escapeStringRegexp( serviceProviderTitle ) + ".*?" );
-        
+
         var sp = _.filter( haveTitle,
             (s) =>
-            {                
+            {
                 return s.object.value.match( regex );
             }
         );
-        
+
         if ( ! Array.isArray( sp ) || sp.length == 0 )
         {
            return console.log( `Service Provider ${serviceProviderTitle} not found` );
         }
-                
+
         var serviceProvider = new ServiceProvider(
             sp[0].subject.uri,
             request,
-            
+
             (err) =>
             {
                 if (err)
@@ -98,7 +98,7 @@ ServiceProviderCatalog.prototype.serviceProvider =
                     return console.log(
                         `Cannot load services for ${serviceProviderTitle}: ${err}` );
                 }
-    
+
                 callback(undefined, serviceProvider); // the constructed ServiceProvider is now fully constructed
             }
         );

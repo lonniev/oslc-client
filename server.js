@@ -62,7 +62,7 @@ var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
 /**
  * Construct a generic OSLC server that can be used on any OSLC domain
  * @constructor
- * @param {URI} servierURI - the server URI
+ * @param {URI} serverURI - the server URI
  * @property {URI} serverURI - the URI of the OSLC server being accessed
  * @property {string} userName - the user name or authentication ID of the user
  * @property {string} password - the user's password credentials
@@ -125,6 +125,9 @@ OSLCServer.prototype.connect = function(userName, password, callback) {
     // Parse the service provider catalog, it will be needed for any other request.
     function gotServiceProviderCatalog(err, response, body)
     {
+        // the ServiceProviderCatalog is an access-restricted Resource
+        // on the first request, Jazz will challenge for FORM authentication
+        // by including its unique HTTP Header and value
         if (response && response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
         {
             const securityUri = URI( _self.serverURI )
@@ -133,6 +136,7 @@ OSLCServer.prototype.connect = function(userName, password, callback) {
                 .addSearch( 'j_password', _self.password )
                 .toString();
 
+            // post the HTTP Form credentials and retry the original request
             return request.post( securityUri, gotServiceProviderCatalog);
         }
 
@@ -166,9 +170,9 @@ OSLCServer.prototype.use = function(providerContainerName, callback)
 
         (err, serviceProvider) =>
         {
-                _self.serviceProvider = serviceProvider;
+            _self.serviceProvider = serviceProvider;
 
-                callback(undefined); // call the callback with no error
+            callback(undefined); // call the callback with no error
         }
     );
 }

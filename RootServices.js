@@ -32,7 +32,7 @@ var OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
 var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
 
-// Encapsulates a Jazz rootservices document as in-memroy RDF knowledge base
+// Encapsulates a Jazz rootservices document as in-memory RDF knowledge base
 //
 // @uri: the URI of the Jazz rootservices resource
 // @rdfSource: the RDF/XML source for the rootservices resource
@@ -40,9 +40,9 @@ var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
 function RootServices(uri, rdfSource) {
 	// Parse the RDF source into an internal representation for future use
 	this.rootServicesURI = uri;
-	
+
 	this.kb = new rdflib.IndexedFormula();
-	
+
 	rdflib.parse(rdfSource, this.kb, uri, 'application/rdf+xml');
 }
 
@@ -54,22 +54,44 @@ function RootServices(uri, rdfSource) {
 //        </oslc:ServiceProviderCatalog>
 //  </jd:oslcCatalogs>
 // We want to get the URI for the CM oslc:domain Service Provider Catalog.
-// 
+//
 // @domain: the domain of the service provider catalog you want to get
 // @return: the service provider catalog URI
 //
 RootServices.prototype.serviceProviderCatalogURI = function(domain)  {
 	var catalogURI = undefined;
+
+	const catalogs;
 	
-	const catalogs = ( domain.uri == OSLCRM().uri )
-	    ? this.kb.each(this.kb.sym(this.rootServicesURI), OSLCRM('rmServiceProviders'))
-	        : this.kb.each(this.kb.sym(this.rootServicesURI), JD('oslcCatalogs'));
-	
+	// each Jazz application uniquely exposes its OSLC catalog(s)
+	switch ( domain.uri ) {
+		case OSLCRM().uri :
+
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OSLCRM('rmServiceProviders'));
+
+			break;
+
+		case OSLCCM().uri :
+
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), JD('oslcCatalogs'));
+
+			break;
+
+		case OSLCCONFIG().uri :
+
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OSLCCONFIG('configServiceProviders'));
+
+		default:
+
+			catalogs = [];
+
+	}
+
 	for (var c in catalogs) {
 		var catalog = this.kb.statementsMatching(catalogs[c], OSLC('domain'), domain);
 		if (catalog) return catalogs[c].uri;
 	}
-	
+
 	return catalogURI;
 }
 

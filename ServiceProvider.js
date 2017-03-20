@@ -32,12 +32,13 @@ const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
 const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 const OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
 const JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
+const OSLCCONFIG = rdflib.Namespace('http://open-services.net/ns/config#');
 
 // Encapsulates a OSLC ServiceProvider resource as in-memory RDF knowledge base
 // This is an asynchronous constructor. The callback is called when the ServiceProvider
 // has discovered all its services
 // @uri: the URI of the ServiceProvider
-// @request: for making HTTP requests 
+// @request: for making HTTP requests
 // @callback(err, serviceProvider): called with the newly constructed and populated service provider
 
 function ServiceProvider(uri, request, callback) {
@@ -58,27 +59,27 @@ function ServiceProvider(uri, request, callback) {
 }
 
 ServiceProvider.prototype.queryBase = function( soughtResource ) {
-        
-        const queryCapabilities = _.filter( this.service.queryCapability, 
+
+        const queryCapabilities = _.filter( this.service.queryCapability,
             (s) =>
-                {                                         
+                {
                     return _.has( s, 'resourceType' )
-                        && _.has( s, 'queryBase' ); 
+                        && _.has( s, 'queryBase' );
                 }
             );
-        
+
         const qcsWithSoughtResource = _.filter( queryCapabilities,
-            (qc) => 
-                {                       
-                    return _.some( qc.resourceType, 
-                        (rt) => {  
+            (qc) =>
+                {
+                    return _.some( qc.resourceType,
+                        (rt) => {
                             return rt.match( soughtResource )
                         }
                     );
                 }
             );
-                
-        return _.first(qcsWithSoughtResource).queryBase;        
+
+        return _.first(qcsWithSoughtResource).queryBase;
  }
 
 // Introspect an RDF object's properties and values, and put them
