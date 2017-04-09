@@ -2,7 +2,7 @@
   "name": "@lonniev/oslc-client",
   "main": "./index.js",
   "description": "Fast, open framework for service integration",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Lonnie VanZandt",
     "email": "lvanzandt@sodius.com"
@@ -22,7 +22,8 @@
     "restful"
   ],
   "dependencies": {
-    "jsonld": "^0.4.2",
+    "canvas": "1.6.5",
+    "jsonld": "0.4.11",
     "lodash": "4.13.1",
     "oauth-1.0a": "1.0.1",
     "passport": "0.3.2",

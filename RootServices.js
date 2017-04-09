@@ -61,8 +61,8 @@ function RootServices(uri, rdfSource) {
 RootServices.prototype.serviceProviderCatalogURI = function(domain)  {
 	var catalogURI = undefined;
 
-	const catalogs;
-	
+	let catalogs;
+
 	// each Jazz application uniquely exposes its OSLC catalog(s)
 	switch ( domain.uri ) {
 		case OSLCRM().uri :
