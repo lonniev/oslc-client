@@ -58,9 +58,9 @@ var DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
 var RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
 var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
 var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
-export const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
-export const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
-export const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
+const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
+const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
+const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
 
 /**
@@ -75,7 +75,7 @@ var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
  * @property {ServiceProviderCatalog} serviceProviderCatalog - the servers' service provider catalog
  * @property {ServiceProvider} serviceProvider - A service provider describing available services
  */
-export function OSLCServer( serverURI, oslcDomain )
+function OSLCServer( serverURI, oslcDomain )
 {
     this.serverURI = serverURI;
     this.userName = null;
@@ -390,3 +390,7 @@ OSLCServer.prototype.query = function(options, callback) {
 OSLCServer.prototype.disconnect = function() {
     // Logout from the server
 }
+
+module.exports.OSLCServer = OSLCServer;
+module.exports.OSLCRM = OSLCRM;
+module.exports.OSLCCM = OSLCCM;
