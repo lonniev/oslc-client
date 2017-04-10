@@ -44,7 +44,7 @@ const RootServices = require('./RootServices');
 const ServiceProviderCatalog = require('./ServiceProviderCatalog');
 const OSLCResource = require('./resource');
 
-var rdflib = require('rdflib');
+const rdflib = require('rdflib');
 
 const URI = require('urijs');
 const _ = require('lodash');
@@ -80,6 +80,16 @@ const JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
  */
 function OSLCServer( serverURI, oslcDomain )
 {
+    if ( !( _.isObjectLike( serverURI ) ) )
+    {
+        throwError( 'cannot construct an OSLCServer without a valid serverURI.' );
+    }
+
+    if ( !( _.isObjectLike( oslcDomain ) ) || !( 'uri' in oslcDomain ) )
+    {
+        throwError( 'cannot construct an OSLCServer without a valid oslcDomain.' );
+    }
+
     this.serverURI = serverURI;
     this.userName = null;
     this.password = null;
@@ -184,7 +194,7 @@ OSLCServer.prototype.connect = function(userName, password)
 
         if (catalogURI == null)
         {
-          return Promise.reject( new Error( 'No catalog URI at ' + _self.rootServices.rootServicesURI ) );
+          return Promise.reject( new Error( `No catalog URI at ${_self.rootServices.rootServicesURI}.` ) );
         }
 
         // Now get a promise of the ServiceProviderCatalog

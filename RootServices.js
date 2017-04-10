@@ -54,9 +54,9 @@ function RootServices(uri, rdfSource) {
 //
 RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
-	if ( ! ( 'uri' in domain ) )
+	if ( ! ( _.isObjectLike( domain ) ) || ! ( 'uri' in domain ) )
 	{
-		return null;
+		throwError( 'cannot look for a Catalog URI for an invalid OSLC Domain Namespace.' );
 	}
 
 	let catalogs;
