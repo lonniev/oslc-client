@@ -392,4 +392,4 @@ OSLCServer.prototype.disconnect = function() {
     // Logout from the server
 }
 
-module.exports = OSLCServer;
+module.exports = { OSLCServer, OSLC, OSLCCM, OSLCRM };
