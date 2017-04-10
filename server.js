@@ -50,18 +50,20 @@ const URI = require('urijs');
 const _ = require('lodash');
 
 // Define several common OSLC namespace constructor functions
-var FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
-var RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-var RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
-var OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
-var DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
-var RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
-var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
-var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
+const FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
+const RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+const RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
+const OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
+const DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
+const RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
+const XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
+const CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
 const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
 const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
 const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
-var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
+const DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
+const OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
+const JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
 
 /**
  * Construct a generic OSLC server that can be used on any OSLC domain
@@ -392,5 +394,17 @@ OSLCServer.prototype.disconnect = function() {
 }
 
 module.exports.OSLCServer = OSLCServer;
-module.exports.OSLCRM = OSLCRM;
+module.exports.FOAF = FOAF;
+module.exports.RDF = RDF;
+module.exports.RDFS = RDFS;
+module.exports.OWL = OWL;
+module.exports.DC = DC;
+module.exports.RSS = RSS;
+module.exports.XSD = XSD;
+module.exports.CONTACT = CONTACT;
+module.exports.OSLC = OSLC;
 module.exports.OSLCCM = OSLCCM;
+module.exports.OSLCRM = OSLCRM;
+module.exports.DCTERMS = DCTERMS;
+module.exports.OSLCCM10 = OSLCCM10;
+module.exports.JD = JD;

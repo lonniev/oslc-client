@@ -17,25 +17,25 @@
 const _ = require('lodash');
 const escapeStringRegexp = require('escape-string-regexp');
 
-var rdflib = require('rdflib');
-var ServiceProvider = require('./ServiceProvider');
+const rdflib = require('rdflib');
+const ServiceProvider = require('./ServiceProvider');
 
 // Define some useful namespaces
 
-var FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
-var RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-var RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
-var OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
-var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
-var DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
-var RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
-var XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
-var CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
-var OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
-var OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
-var OSLCRM = rdflib.Namespace('http://open-services.net/ns/rm#');
-var OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
-var JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/')
+const FOAF = require('./server').FOAF;
+const RDF = require('./server').RDF;
+const RDFS = require('./server').RDFS;
+const OWL = require('./server').OWL;
+const DC = require('./server').DC;
+const RSS = require('./server').RSS;
+const XSD = require('./server').XSD;
+const CONTACT = require('./server').CONTACT;
+const OSLC = require('./server').OSLC;
+const OSLCCM = require('./server').OSLCCM;
+const OSLCRM = require('./server').OSLCRM;
+const OSLCCM10 = require('./server').OSLCCM10;
+const JD = require('./server').JD;
+const DCTERMS = require('./server').DCTERMS;
 
 // Encapsulates a OSLC ServiceProviderCatalog resource as in-memory RDF knowledge base
 
