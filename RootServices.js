@@ -17,6 +17,7 @@
 "use strict";
 
 const rdflib = require('rdflib');
+const _ = require('lodash');
 
 // Define some useful namespaces
 
