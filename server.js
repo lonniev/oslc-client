@@ -65,11 +65,6 @@ var OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 var DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
 
 /**
- * All the OSLCServer methods are asynchronous since many of them
- * could take a while to execute.
- */
-
-/**
  * Construct a generic OSLC server that can be used on any OSLC domain
  * @constructor
  * @param {URI} serverURI - the server URI
@@ -149,7 +144,8 @@ OSLCServer.prototype.getPromisedServiceProviderCatalog = function( catalogURI )
           reject( err );
         }
       );
-  }
+    }
+  );
 }
 
 /**
@@ -403,5 +399,7 @@ OSLCServer.prototype.disconnect = function() {
     // Logout from the server
 }
 
-
+// export the OSLCServer class in a variety of typical ways
 module.exports = OSLCServer;
+export OSLCServer;
+export { OSLCServer as default };
