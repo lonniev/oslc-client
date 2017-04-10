@@ -399,7 +399,4 @@ OSLCServer.prototype.disconnect = function() {
     // Logout from the server
 }
 
-// export the OSLCServer class in a variety of typical ways
 module.exports = OSLCServer;
-export OSLCServer;
-export { OSLCServer as default };
