@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-var rdflib = require('rdflib');
+const rdflib = require('rdflib');
 const _ = require('lodash');
-
-// Define some useful namespaces
-
-const FOAF = require('./server').FOAF;
-const RDF = require('./server').RDF;
-const RDFS = require('./server').RDFS;
-const OWL = require('./server').OWL;
-const DC = require('./server').DC;
-const RSS = require('./server').RSS;
-const XSD = require('./server').XSD;
-const CONTACT = require('./server').CONTACT;
-const OSLC = require('./server').OSLC;
-const OSLCCM = require('./server').OSLCCM;
-const OSLCRM = require('./server').OSLCRM;
-const OSLCCM10 = require('./server').OSLCCM10;
-const JD = require('./server').JD;
 
 // Encapsulates a OSLC ServiceProvider resource as in-memory RDF knowledge base
 // This is an asynchronous constructor. The callback is called when the ServiceProvider

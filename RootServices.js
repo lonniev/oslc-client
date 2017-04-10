@@ -20,19 +20,11 @@ const rdflib = require('rdflib');
 
 // Define some useful namespaces
 
-const FOAF = require('./server').FOAF;
-const RDF = require('./server').RDF;
-const RDFS = require('./server').RDFS;
-const OWL = require('./server').OWL;
-const DC = require('./server').DC;
-const RSS = require('./server').RSS;
-const XSD = require('./server').XSD;
-const CONTACT = require('./server').CONTACT;
 const OSLC = require('./server').OSLC;
 const OSLCCM = require('./server').OSLCCM;
 const OSLCRM = require('./server').OSLCRM;
-const OSLCCM10 = require('./server').OSLCCM10;
 const JD = require('./server').JD;
+const OSLCCONFIG = require('./server').OSLCCONFIG;
 
 // Encapsulates a Jazz rootservices document as in-memory RDF knowledge base
 //
@@ -60,8 +52,12 @@ function RootServices(uri, rdfSource) {
 // @domain: the domain of the service provider catalog you want to get
 // @return: the service provider catalog URI
 //
-RootServices.prototype.serviceProviderCatalogURI = function(domain)  {
-	var catalogURI = undefined;
+RootServices.prototype.serviceProviderCatalogURI = function(domain) {
+
+	if ( ! ( 'uri' in domain ) )
+	{
+		return null;
+	}
 
 	let catalogs;
 
@@ -94,8 +90,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain)  {
 		if (catalog) return catalogs[c].uri;
 	}
 
-	return catalogURI;
+	return null;
 }
-
 
 module.exports = RootServices;

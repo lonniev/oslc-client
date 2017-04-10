@@ -40,9 +40,9 @@ const requestApromise = require('request-promise-native').defaults({
     followAllRedirects : true // for FORM based authentication
 });
 
-var RootServices = require('./RootServices');
-var ServiceProviderCatalog = require('./ServiceProviderCatalog');
-var OSLCResource = require('./resource');
+const RootServices = require('./RootServices');
+const ServiceProviderCatalog = require('./ServiceProviderCatalog');
+const OSLCResource = require('./resource');
 
 var rdflib = require('rdflib');
 
@@ -59,6 +59,7 @@ const RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
 const XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
 const CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
 const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
+const OSLCCONFIG = rdflib.Namespace("http://open-services.net/ns/config#");
 const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
 const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
 const DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
@@ -98,51 +99,56 @@ OSLCServer.prototype.getPromisedServiceProviderCatalog = function( catalogURI )
 {
   const _self = this;
 
+  if ( ! _.isString( catalogURI ) )
+  {
+      return Promise.reject( new Error( `catalogURI ${catalogURI} must be a string URI` ) );
+  }
+
   const securityUri = URI( _self.serverURI )
-      .segment( 'j_security_check' )
-      .addSearch( 'j_username', _self.userName )
-      .addSearch( 'j_password', _self.password )
-      .toString();
+    .segment( 'j_security_check' )
+    .addSearch( 'j_username', _self.userName )
+    .addSearch( 'j_password', _self.password )
+    .toString();
 
   return requestApromise
     .get( { uri: catalogURI, resolveWithFullResponse: true } )
     .then( (response) =>
-      {
-        if ( ( response.statusCode == 200)
-          && (response.headers['x-com-ibm-team-repository-web-auth-msg'] != 'authrequired') )
         {
-          _self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, response.body);
+            if ( ( response.statusCode == 200)
+                && (response.headers['x-com-ibm-team-repository-web-auth-msg'] != 'authrequired') )
+            {
+                _self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, response.body);
 
-          return Promise.resolve( _self.serviceProviderCatalog );
+                return Promise.resolve( _self.serviceProviderCatalog );
+            }
+
+            // the ServiceProviderCatalog is an access-restricted Resource
+            // on the first request, Jazz will challenge for FORM authentication
+            // by including its unique HTTP Header and value
+            if (response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
+            {
+                // post the HTTP Form credentials and recursively retry the original request
+                return requestApromise
+                    .post( securityUri )
+                    .then( (body) =>
+                        {
+                            return Promise.resolve( _self.getPromisedServiceProviderCatalog( catalogURI ) );
+                        }
+                    )
+                    .catch( (err) =>
+                        {
+                            return Promise.reject(err);
+                        }
+                    );
+            }
+
+            return Promise.reject( new Error( `Failed to get an OSLC ServiceProviderCatalog. Body is ${response.body}` ) );
         }
-
-        // the ServiceProviderCatalog is an access-restricted Resource
-        // on the first request, Jazz will challenge for FORM authentication
-        // by including its unique HTTP Header and value
-        if (response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
-        {
-            // post the HTTP Form credentials and recursively retry the original request
-            return requestApromise
-              .post( securityUri )
-              .then( (body) =>
-                {
-                  return Promise.resolve( _self.getPromisedServiceProviderCatalog( catalogURI ) );
-                }
-              )
-              .catch( (err) =>
-                {
-                  return Promise.reject(err);
-                }
-              );
-        }
-
-        return Promise.reject( new Error( 'Failed to get an OSLC ServiceProviderCatalog. ' + response.body ) );
-      }
     )
     .catch( (err) =>
-      {
-        return Promise.reject( err );
-      }
+        {
+            return Promise.reject( err );
+        }
     );
 }
 
@@ -169,7 +175,7 @@ OSLCServer.prototype.connect = function(userName, password)
       {
         if (response.statusCode != 200)
         {
-            return Promise.reject( new Error( 'Failed to read the Jazz rootservices resource ' + response.statusCode ) );
+            return Promise.reject( new Error( `Failed to get the Jazz rootservices resource. Got status ${response.statusCode}.` ) );
         }
 
         _self.rootServices = new RootServices(rootServicesUri, response.body);
@@ -404,6 +410,7 @@ module.exports.XSD = XSD;
 module.exports.CONTACT = CONTACT;
 module.exports.OSLC = OSLC;
 module.exports.OSLCCM = OSLCCM;
+module.exports.OSLCCONFIG = OSLCCONFIG;
 module.exports.OSLCRM = OSLCRM;
 module.exports.DCTERMS = DCTERMS;
 module.exports.OSLCCM10 = OSLCCM10;
