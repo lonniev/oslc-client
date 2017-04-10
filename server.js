@@ -135,7 +135,7 @@ OSLCServer.prototype.getPromisedServiceProviderCatalog = function( catalogURI )
               );
         }
 
-        return Promise.reject( new Error( 'Failed to get an OSLC ServiceProviderCatalog. ' + response.body );
+        return Promise.reject( new Error( 'Failed to get an OSLC ServiceProviderCatalog. ' + response.body ) );
       }
     )
     .catch( (err) =>
