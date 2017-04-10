@@ -2,7 +2,7 @@
   "name": "@lonniev/oslc-client",
   "main": "./index.js",
   "description": "Fast, open framework for service integration",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": {
     "name": "Lonnie VanZandt",
     "email": "lvanzandt@sodius.com"
