@@ -99,7 +99,7 @@ OSLCServer.prototype.getPromisedServiceProviderCatalog = function( catalogURI )
   return new Promise( (resolve,reject) =>
   {
     requestApromise
-      .get( { catalogURI, resolveWithFullResponse: true } )
+      .get( { uri: catalogURI, resolveWithFullResponse: true } )
       .then( (response) =>
         {
           // the ServiceProviderCatalog is an access-restricted Resource
@@ -168,7 +168,7 @@ OSLCServer.prototype.connect = function(userName, password)
       // Get the Jazz rootservices document for OSLC v2
       // This does not require authentication
       requestApromise
-        .get( { rootServicesUri, resolveWithFullResponse: true } )
+        .get( { uri: rootServicesUri, resolveWithFullResponse: true } )
         .then( (response) =>
           {
             if (response.statusCode != 200)
