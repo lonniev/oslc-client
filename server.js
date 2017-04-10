@@ -30,7 +30,7 @@ const request = require('request').defaults({
     followAllRedirects : true // for FORM based authentication
 });
 
-const requestApromise = require('request-promise').defaults({
+const requestApromise = require('request-promise-native').defaults({
     headers : {
         'Accept' : 'application/rdf+xml',
         'OSLC-Core-Version' : '2.0'
