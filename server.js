@@ -96,47 +96,49 @@ OSLCServer.prototype.getPromisedServiceProviderCatalog = function( catalogURI )
 {
   const _self = this;
 
+  const securityUri = URI( _self.serverURI )
+      .segment( 'j_security_check' )
+      .addSearch( 'j_username', _self.userName )
+      .addSearch( 'j_password', _self.password )
+      .toString();
+
   return new Promise( (resolve,reject) =>
   {
     requestApromise
       .get( { uri: catalogURI, resolveWithFullResponse: true } )
       .then( (response) =>
         {
-          // the ServiceProviderCatalog is an access-restricted Resource
-          // on the first request, Jazz will challenge for FORM authentication
-          // by including its unique HTTP Header and value
-          if (response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
+          if ( ( response.statusCode == 200)
+            && (response.headers['x-com-ibm-team-repository-web-auth-msg'] != 'authrequired') )
           {
-              const securityUri = URI( _self.serverURI )
-                  .segment( 'j_security_check' )
-                  .addSearch( 'j_username', _self.userName )
-                  .addSearch( 'j_password', _self.password )
-                  .toString();
+            _self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, response.body);
 
-              // post the HTTP Form credentials and recursively retry the original request
-              requestApromise
-                .post( securityUri )
-                .then( (body) =>
-                  {
-                    resolve( _self.getPromisedServiceProviderCatalog( catalogURI ) );
-                  }
-                )
-                .catch( (err) =>
-                  {
-                    reject(err);
-                  }
-                );
+            resolve( _self.serviceProviderCatalog );
           }
-
-          // otherwise, this is an authenticated secondary response
-          if (response.statusCode != 200)
-          {
-              reject( 'Failed to read the OSLC ServiceProviderCatalog' );
+          else {
+            // the ServiceProviderCatalog is an access-restricted Resource
+            // on the first request, Jazz will challenge for FORM authentication
+            // by including its unique HTTP Header and value
+            if (response.headers['x-com-ibm-team-repository-web-auth-msg'] === 'authrequired')
+            {
+                // post the HTTP Form credentials and recursively retry the original request
+                requestApromise
+                  .post( securityUri )
+                  .then( (body) =>
+                    {
+                      resolve( _self.getPromisedServiceProviderCatalog( catalogURI ) );
+                    }
+                  )
+                  .catch( (err) =>
+                    {
+                      reject(err);
+                    }
+                  );
+            }
+            else {
+              reject( 'Failed to read the OSLC ServiceProviderCatalog. ' + response.body );
+            }
           }
-
-          _self.serviceProviderCatalog = new ServiceProviderCatalog(response.request.uri.href, response.body);
-
-          resolve( _self.serviceProviderCatalog );
         }
       )
       .catch( (err) =>
@@ -171,33 +173,35 @@ OSLCServer.prototype.connect = function(userName, password)
         .get( { uri: rootServicesUri, resolveWithFullResponse: true } )
         .then( (response) =>
           {
-            if (response.statusCode != 200)
+            if (response.statusCode == 200)
             {
-              reject( 'Failed to read the Jazz rootservices resource ' );
-            }
+              _self.rootServices = new RootServices(rootServicesUri, response.body);
 
-            _self.rootServices = new RootServices(rootServicesUri, response.body);
+              const catalogURI = _self.rootServices.serviceProviderCatalogURI( OSLCRM() );
 
-            const catalogURI = _self.rootServices.serviceProviderCatalogURI( OSLCRM() );
-
-            if (catalogURI == null)
-            {
+              if (catalogURI != null)
+              {
+                // Now get a promise of the ServiceProviderCatalog
+                _self.getPromisedServiceProviderCatalog( catalogURI )
+                  .then( (catalog) =>
+                    {
+                      // having a connected OSLCServer with a ServiceProviderCatalog, return the OSLCServer
+                      resolve( _self );
+                    }
+                  )
+                  .catch( (err) =>
+                    {
+                      reject( err );
+                    }
+                  );
+              }
+              else {
                 reject( 'No catalog URI at ' + _self.rootServices.rootServicesURI );
+              }
             }
-
-            // Now get a promise of the ServiceProviderCatalog
-            _self.getPromisedServiceProviderCatalog( catalogURI )
-              .then( (catalog) =>
-                {
-                  // having a connected OSLCServer with a ServiceProviderCatalog, return the OSLCServer
-                  resolve( _self );
-                }
-              )
-              .catch( (err) =>
-                {
-                  reject( err );
-                }
-              );
+            else {
+              reject( 'Failed to read the Jazz rootservices resource ' + response.statusCode );
+            }
           }
         )
         .catch( (err) =>
