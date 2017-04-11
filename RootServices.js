@@ -19,13 +19,8 @@
 const rdflib = require('rdflib');
 const _ = require('lodash');
 
-// Define some useful namespaces
+const OslcNamespace = require('./OslcNamespace');
 
-const OSLC = require('./server').OSLC;
-const OSLCCM = require('./server').OSLCCM;
-const OSLCRM = require('./server').OSLCRM;
-const JD = require('./server').JD;
-const OSLCCONFIG = require('./server').OSLCCONFIG;
 
 // Encapsulates a Jazz rootservices document as in-memory RDF knowledge base
 //
@@ -64,21 +59,21 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	// each Jazz application uniquely exposes its OSLC catalog(s)
 	switch ( domain.uri ) {
-		case OSLCRM().uri :
+		case OslcNamespace.OSLCRM().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OSLCRM('rmServiceProviders'));
-
-			break;
-
-		case OSLCCM().uri :
-
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), JD('oslcCatalogs'));
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCRM('rmServiceProviders'));
 
 			break;
 
-		case OSLCCONFIG().uri :
+		case OslcNamespace.OSLCCM().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OSLCCONFIG('configServiceProviders'));
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.JD('oslcCatalogs'));
+
+			break;
+
+		case OslcNamespace.OSLCCONFIG().uri :
+
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('configServiceProviders'));
 
 		default:
 
@@ -87,7 +82,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 	}
 
 	for (var c in catalogs) {
-		var catalog = this.kb.statementsMatching(catalogs[c], OSLC('domain'), domain);
+		var catalog = this.kb.statementsMatching(catalogs[c], OslcNamespace.OSLC('domain'), domain);
 		if (catalog) return catalogs[c].uri;
 	}
 

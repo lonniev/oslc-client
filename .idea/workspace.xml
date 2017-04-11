@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="207da3e6-d15b-473b-a229-8e199cdd5fa1" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/OslcNamespace.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RootServices.js" afterPath="$PROJECT_DIR$/RootServices.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ServiceProviderCatalog.js" afterPath="$PROJECT_DIR$/ServiceProviderCatalog.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path=".idea/misc.xml" />
@@ -22,14 +25,14 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="305">
-              <caret line="90" column="5" lean-forward="false" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
+            <state relative-caret-position="562">
+              <caret line="396" column="14" lean-forward="false" selection-start-line="396" selection-start-column="14" selection-end-line="396" selection-end-column="14" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <marker date="1491866120000" expanded="true" signature="10966:14216" ph="..." />
+                <marker date="1491871230000" expanded="true" signature="9955:12766" ph="..." />
               </folding>
             </state>
           </provider>
@@ -47,6 +50,18 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="OslcNamespace.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/OslcNamespace.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="27" column="37" lean-forward="false" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#43#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -57,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServiceProviderCatalog.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ServiceProviderCatalog.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ServiceProviderCatalog.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+            <state relative-caret-position="207">
+              <caret line="68" column="0" lean-forward="true" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -72,7 +87,7 @@
       <file leaf-file-name="ServiceProvider.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ServiceProvider.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1515">
+            <state relative-caret-position="517">
               <caret line="101" column="1" lean-forward="false" selection-start-line="101" selection-start-column="1" selection-end-line="101" selection-end-column="1" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
@@ -94,8 +109,8 @@
       <file leaf-file-name="RootServices.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RootServices.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
-              <caret line="23" column="38" lean-forward="true" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
+            <state relative-caret-position="1174">
+              <caret line="81" column="5" lean-forward="true" selection-start-line="81" selection-start-column="5" selection-end-line="81" selection-end-column="5" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -105,10 +120,18 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>./OSLCServer</find>
       <find>.*?(\w+) = .*?;</find>
+      <find>const (\w+)</find>
     </findStrings>
     <replaceStrings>
       <replace>module.exports.$1 = $1</replace>
@@ -116,6 +139,7 @@
       <replace>./server.js</replace>
       <replace>./server</replace>
       <replace>module.exports.$1 = $1;</replace>
+      <replace>OslcNamespace.prototype.$1</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -129,11 +153,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ServiceProviderCatalog.js" />
         <option value="$PROJECT_DIR$/ServiceProvider.js" />
-        <option value="$PROJECT_DIR$/server.js" />
         <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/oslcNamespace.js" />
         <option value="$PROJECT_DIR$/RootServices.js" />
+        <option value="$PROJECT_DIR$/ServiceProviderCatalog.js" />
+        <option value="$PROJECT_DIR$/server.js" />
       </list>
     </option>
   </component>
@@ -773,7 +798,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1491860191057</updated>
-      <workItem from="1491860196935" duration="5048000" />
+      <workItem from="1491860196935" duration="7540000" />
     </task>
     <task id="LOCAL-00001" summary="DRY with the RDF Namespaces">
       <created>1491861502584</created>
@@ -786,7 +811,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5048000" />
+    <option name="totallyTimeSpent" value="7540000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
@@ -837,32 +862,11 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/resource.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="37" lean-forward="false" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="90" column="5" lean-forward="false" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <marker date="1491866120000" expanded="true" signature="10966:14216" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -874,10 +878,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ServiceProvider.js">
+    <entry file="file://$PROJECT_DIR$/resource.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1515">
-          <caret line="101" column="1" lean-forward="false" selection-start-line="101" selection-start-column="1" selection-end-line="101" selection-end-column="1" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -886,8 +890,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RootServices.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="23" column="38" lean-forward="true" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
+        <state relative-caret-position="1174">
+          <caret line="81" column="5" lean-forward="true" selection-start-line="81" selection-start-column="5" selection-end-line="81" selection-end-column="5" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ServiceProvider.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="101" column="1" lean-forward="false" selection-start-line="101" selection-start-column="1" selection-end-line="101" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -896,10 +910,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ServiceProviderCatalog.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="207">
+          <caret line="68" column="0" lean-forward="true" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/OslcNamespace.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="27" column="37" lean-forward="false" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#43#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="562">
+          <caret line="396" column="14" lean-forward="false" selection-start-line="396" selection-start-column="14" selection-end-line="396" selection-end-column="14" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <marker date="1491871230000" expanded="true" signature="9955:12766" ph="..." />
           </folding>
         </state>
       </provider>

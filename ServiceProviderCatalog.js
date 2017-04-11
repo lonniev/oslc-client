@@ -18,11 +18,9 @@ const _ = require('lodash');
 const escapeStringRegexp = require('escape-string-regexp');
 
 const rdflib = require('rdflib');
+const OslcNamespace = require( './OslcNamespace' );
 const ServiceProvider = require('./ServiceProvider');
 
-// Define some useful namespaces
-
-const DCTERMS = require('./server').DCTERMS;
 
 // Encapsulates a OSLC ServiceProviderCatalog resource as in-memory RDF knowledge base
 
@@ -57,7 +55,7 @@ ServiceProviderCatalog.prototype.serviceProvider =
     {
         var haveTitle = this.catalog.statementsMatching(
             undefined,
-            DCTERMS('title'),
+            OslcNamespace.DCTERMS('title'),
             undefined );
 
         const regex = new RegExp( ".*?" + escapeStringRegexp( serviceProviderTitle ) + ".*?" );

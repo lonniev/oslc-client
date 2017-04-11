@@ -40,6 +40,7 @@ const requestApromise = require('request-promise-native').defaults({
     followAllRedirects : true // for FORM based authentication
 });
 
+const OslcNamespace = require( './OslcNamespace' );
 const RootServices = require('./RootServices');
 const ServiceProviderCatalog = require('./ServiceProviderCatalog');
 const OSLCResource = require('./resource');
@@ -49,27 +50,11 @@ const rdflib = require('rdflib');
 const URI = require('urijs');
 const _ = require('lodash');
 
-// Define several common OSLC namespace constructor functions
-const FOAF = rdflib.Namespace("http://xmlns.com/foaf/0.1/");
-const RDF = rdflib.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-const RDFS = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#");
-const OWL = rdflib.Namespace("http://www.w3.org/2002/07/owl#");
-const DC = rdflib.Namespace("http://purl.org/dc/elements/1.1/");
-const RSS = rdflib.Namespace("http://purl.org/rss/1.0/");
-const XSD = rdflib.Namespace("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#dt-");
-const CONTACT = rdflib.Namespace("http://www.w3.org/2000/10/swap/pim/contact#");
-const OSLC = rdflib.Namespace("http://open-services.net/ns/core#");
-const OSLCCONFIG = rdflib.Namespace("http://open-services.net/ns/config#");
-const OSLCCM = rdflib.Namespace('http://open-services.net/ns/cm#');
-const OSLCRM = rdflib.Namespace('http://open-services.net/xmlns/rm/1.0/');
-const DCTERMS = rdflib.Namespace('http://purl.org/dc/terms/');
-const OSLCCM10 = rdflib.Namespace('http://open-services.net/xmlns/cm/1.0/');
-const JD = rdflib.Namespace('http://jazz.net/xmlns/prod/jazz/discovery/1.0/');
-
 /**
  * Construct a generic OSLC server that can be used on any OSLC domain
  * @constructor
  * @param {URI} serverURI - the server URI
+ * @param {Namespace} oslcDomain - the RDF Namespace of an OSLC Domain
  * @property {URI} serverURI - the URI of the OSLC server being accessed
  * @property {string} userName - the user name or authentication ID of the user
  * @property {string} password - the user's password credentials
@@ -228,7 +213,7 @@ OSLCServer.prototype.connect = function(userName, password)
  */
 OSLCServer.prototype.use = function(providerContainerName, callback)
 {
-    var _self = this;
+    const _self = this;
 
     _self.providerContainerName = providerContainerName;
 
@@ -382,7 +367,7 @@ OSLCServer.prototype.query = function(options, callback) {
 
             rdflib.parse(body, kb, queryURI.toString(), 'application/rdf+xml');
 
-            const resultSetMembers = kb.each(undefined, RDFS('member'));
+            const resultSetMembers = kb.each(undefined, OslcNamespace.RDFS('member'));
 
             const results = _.map( resultSetMembers,
 
@@ -409,19 +394,4 @@ OSLCServer.prototype.disconnect = function() {
     // Logout from the server
 }
 
-module.exports.OSLCServer = OSLCServer;
-module.exports.FOAF = FOAF;
-module.exports.RDF = RDF;
-module.exports.RDFS = RDFS;
-module.exports.OWL = OWL;
-module.exports.DC = DC;
-module.exports.RSS = RSS;
-module.exports.XSD = XSD;
-module.exports.CONTACT = CONTACT;
-module.exports.OSLC = OSLC;
-module.exports.OSLCCM = OSLCCM;
-module.exports.OSLCCONFIG = OSLCCONFIG;
-module.exports.OSLCRM = OSLCRM;
-module.exports.DCTERMS = DCTERMS;
-module.exports.OSLCCM10 = OSLCCM10;
-module.exports.JD = JD;
+module.exports = OSLCServer;
