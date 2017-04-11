@@ -83,12 +83,14 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	}
 
-	console.log( kb );
-	console.log( catalogs );
+	for (var c in catalogs) {
+	    console.log( `for ${domain.uri}: ${catalogs[c]} for ${c}.`);
 
-	return _.find( catalogs, (c) => { kb.statementsMatching(c, OslcNamespace.OSLC('domain'), domain) } ).uri
-        || _.head( catalogs ).uri
-        || null;
+		var catalog = kb.statementsMatching(catalogs[c], OslcNamespace.OSLC('domain'), domain);
+		if (catalog) return catalogs[c].uri;
+	}
+
+	return null;
 }
 
 module.exports = RootServices;
