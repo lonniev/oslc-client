@@ -85,13 +85,15 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	}
 
-	_.forEach(catalogs, (c) => { console.log(`Catalog is ${c}.`); } );
+	const catalog = _.find( catalogs, (c) =>
+        {
+            ( kb.statementsMatching( c, OslcNamespace.OSLC('domain'), domain ) != null );
+        }
+    );
 
-	for (var c in catalogs) {
-	    console.log( `for ${domain.uri}: ${catalogs[c]} for ${c}.`);
-
-		var catalog = kb.statementsMatching(catalogs[c], OslcNamespace.OSLC('domain'), domain);
-		if (catalog) return catalogs[c].uri;
+    if (catalog)
+    {
+        return catalog.uri;
 	}
 
 	return null;
