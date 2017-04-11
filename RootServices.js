@@ -52,7 +52,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	if ( ! ( _.isObjectLike( domain ) ) || ! ( 'uri' in domain ) )
 	{
-		throwError( 'cannot look for a Catalog URI given an invalid OSLC Domain Namespace.' );
+		throw new TypeError( 'cannot look for a Catalog URI given an invalid OSLC Domain Namespace.' );
 	}
 
 	const kb = this.kb;
@@ -79,7 +79,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 		default:
 
-			catalogs = [];
+			throw new Error( `Unsupported OSLC Domain ${domain.uri}.` );
 
 	}
 
