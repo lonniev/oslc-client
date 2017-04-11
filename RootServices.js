@@ -52,7 +52,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	if ( ! ( _.isObjectLike( domain ) ) || ! ( 'uri' in domain ) )
 	{
-		throwError( 'cannot look for a Catalog URI for an invalid OSLC Domain Namespace.' );
+		throwError( 'cannot look for a Catalog URI given an invalid OSLC Domain Namespace.' );
 	}
 
 	let catalogs;
@@ -73,7 +73,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 		case OslcNamespace.OSLCCONFIG().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('configServiceProviders'));
+			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('cmServiceProviders'));
 
 		default:
 
