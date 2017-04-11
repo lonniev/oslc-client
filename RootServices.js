@@ -79,7 +79,7 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 		default:
 
-			throw new Error( `Unsupported OSLC Domain ${domain.uri}. Must be ${OslcNamespace.OSLCRM().uri}, ${OslcNamespace.OSLCCM().uri}, or ${OslcNamespace.OSLCGC().uri}` );
+			throw new Error( `Unsupported OSLC Domain ${domain.uri}. Must be ${OslcNamespace.OSLCRM().uri}, ${OslcNamespace.OSLCCM().uri}, or ${OslcNamespace.OSLCCONFIG().uri}` );
 
 	}
 
