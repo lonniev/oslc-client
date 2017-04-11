@@ -77,11 +77,15 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 			catalogs = kb.each(kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('cmServiceProviders'));
 
+            break;
+
 		default:
 
-			throw new Error( `Unsupported OSLC Domain ${domain.uri}. Must be ${OslcNamespace.OSLCRM().uri}, ${OslcNamespace.OSLCCM().uri}, or ${OslcNamespace.OSLCCONFIG().uri}` );
+			throw new Error( `Unsupported OSLC Domain ${domain.uri}.` );
 
 	}
+
+	_.forEach(catalogs, (c) => { console.log(`Catalog is ${c}.`); } );
 
 	for (var c in catalogs) {
 	    console.log( `for ${domain.uri}: ${catalogs[c]} for ${c}.`);
