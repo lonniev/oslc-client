@@ -55,25 +55,27 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 		throwError( 'cannot look for a Catalog URI given an invalid OSLC Domain Namespace.' );
 	}
 
+	const kb = this.kb;
+
 	let catalogs;
 
 	// each Jazz application uniquely exposes its OSLC catalog(s)
 	switch ( domain.uri ) {
 		case OslcNamespace.OSLCRM().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCRM('rmServiceProviders'));
+			catalogs = kb.each(kb.sym(this.rootServicesURI), OslcNamespace.OSLCRM('rmServiceProviders'));
 
 			break;
 
 		case OslcNamespace.OSLCCM().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.JD('oslcCatalogs'));
+			catalogs = kb.each(kb.sym(this.rootServicesURI), OslcNamespace.JD('oslcCatalogs'));
 
 			break;
 
 		case OslcNamespace.OSLCCONFIG().uri :
 
-			catalogs = this.kb.each(this.kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('cmServiceProviders'));
+			catalogs = kb.each(kb.sym(this.rootServicesURI), OslcNamespace.OSLCCONFIG('cmServiceProviders'));
 
 		default:
 
@@ -81,12 +83,9 @@ RootServices.prototype.serviceProviderCatalogURI = function(domain) {
 
 	}
 
-	for (var c in catalogs) {
-		var catalog = this.kb.statementsMatching(catalogs[c], OslcNamespace.OSLC('domain'), domain);
-		if (catalog) return catalogs[c].uri;
-	}
-
-	return null;
+	return _.find( catalogs, (c) => { kb.statementsMatching(c, OslcNamespace.OSLC('domain'), domain) } ).uri
+        || _.head( catalogs ).uri
+        || null;
 }
 
 module.exports = RootServices;
